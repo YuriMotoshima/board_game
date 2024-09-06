@@ -8,6 +8,7 @@ from starlette.middleware.base import (BaseHTTPMiddleware,
                                        RequestResponseEndpoint)
 from starlette.types import ASGIApp
 from app.data.database import engine
+import geocoder
 
 class HeaderValidationMiddleware(BaseHTTPMiddleware):
     """HeaderValidationMiddleware Middleware.
@@ -44,8 +45,8 @@ class HeaderValidationMiddleware(BaseHTTPMiddleware):
             _type_: Response
         """
         try:
-            auth = request.headers.get('Authorization')
-            client_domain = request.headers.get('user-domain', 'DEV')
+            # auth = request.headers.get('Authorization')
+            client_host = request.client.host
             _path = request.scope['path']
             
             # disponibilizar o Swagger
@@ -54,13 +55,9 @@ class HeaderValidationMiddleware(BaseHTTPMiddleware):
                 response = await call_next(request)
                 return response
                 
-            if auth:
-                auth = auth.replace('Bearer ', '')
-                current_tenant = await self.get_current_tenant(authorization=auth, path=_path, session=self.Session)
-                request.state.current_tenant = current_tenant
-                request.state.client_domain = client_domain.lower()
-            else:
-                raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Authorization missing")
+            if client_host:
+                geolocation = await self.get_geolocation(client_host=client_host)
+                request.state.geolocation = geolocation
                 
             response = await call_next(request)
             return response
@@ -69,6 +66,20 @@ class HeaderValidationMiddleware(BaseHTTPMiddleware):
             return JSONResponse(status_code=err.status_code, content={"detail": err.detail})
         except Exception as err:
             return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"detail": "server"})
+
+    async def get_geolocation(self, client_host: Request):
+        geo = geocoder.ip(client_host)
+
+        if geo.ok:
+            return {
+                "city": geo.city or "-",
+                "state": geo.state or "-",
+                "country": geo.country or "-",
+                "latitude": geo.lat or "-",
+                "longitude": geo.lng or "-"
+            }
+        else:
+            return {"error": "Geolocation not found"}
 
 
     async def get_current_tenant(self, authorization: str, path: str, session: SQLAlchemySession):
@@ -91,6 +102,9 @@ class HeaderValidationMiddleware(BaseHTTPMiddleware):
             status_code=status.HTTP_403_FORBIDDEN,
             detail='Forbidden: Access forbidden',
         )
+        # TODO:Incluir em models futuramente.
+        class LogItem:
+            ...
         
         auth = f"{authorization[:10]}...{authorization[-10:]}"
         log_item = session.scalar(select(LogItem).where(LogItem.partial_token == str(auth)))

@@ -11,10 +11,4 @@ class Settings(BaseSettings):
     TABLE_CONTROL_LOG: Optional[str]
     DATABASE_URL: Optional[str]
     
-    @classmethod
-    def load(cls, test:bool = False):
-        return cls(
-            TEST = test,
-            GCP_TABLE_CONTROL_LOG=environ.get('GCP_TABLE_CONTROL_LOG', None),
-        )
         

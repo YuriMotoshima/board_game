@@ -5,3 +5,4 @@ class Message(BaseModel):
     message: Optional[str]
     headers: Optional[dict]
     scope: Optional[dict | str]
+    state: Optional[dict]
