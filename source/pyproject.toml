@@ -1,0 +1,38 @@
+[tool.poetry]
+name = "board-game"
+version = "0.1.0"
+description = "Application to create and play your board game."
+authors = ["YuriMotoshima <yurimotoshima@gmail.com>"]
+license = "MPL"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.113.0"
+sqlalchemy = "^2.0.34"
+pydantic-settings = "^2.4.0"
+
+
+[tool.poetry.group.dev.dependencies]
+taskipy = "^1.13.0"
+pytest = "^8.3.2"
+isort = "^5.13.2"
+pytest-cov = "^5.0.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.coverage.run]
+omit = [
+    "config/*",
+    "images/*",
+    "*/__init__.py",
+]
+
+[tool.taskipy.tasks]
+test = 'pytest -s -x --cov=app -vv'
+post_test = 'coverage html'
+clear = "isort . && powershell -Command \"Get-ChildItem -Path . -Recurse -Directory -Filter '__pycache__' | Remove-Item -Recurse -Force\""
