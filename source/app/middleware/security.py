@@ -50,14 +50,22 @@ class HeaderValidationMiddleware(BaseHTTPMiddleware):
             _path = request.scope['path']
             
             # disponibilizar o Swagger
+            # 0 =Route(path='/openapi.json', name='openapi', methods=['GET', 'HEAD'])
+            # 1 =Route(path='/docs', name='swagger_ui_html', methods=['GET', 'HEAD'])
+            # 2 =Route(path='/docs/oauth2-redirect', name='swagger_ui_redirect', methods=['GET', 'HEAD'])
+            # 3 =Route(path='/redoc', name='redoc_html', methods=['GET', 'HEAD'])
+            # 4 =APIRoute(path='/', name='read_root', methods=['GET'])
+            
             # if _path in ['/docs']:
             if _path in ['/docs', '/openapi.json']:
                 response = await call_next(request)
                 return response
                 
             if client_host:
-                geolocation = await self.get_geolocation(client_host=client_host)
-                request.state.geolocation = geolocation
+                request.state.user_language = request.headers.get("Accept-Language")
+                request.state.user_agent = request.headers.get("User-Agent")
+                request.state.ip = client_host
+                request.state.geolocation = await self.get_geolocation(client_host=client_host)
                 
             response = await call_next(request)
             return response
