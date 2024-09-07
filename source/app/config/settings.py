@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="", env_file='.env', env_file_encoding='utf-8')
      
     TEST: Optional[bool] = False
-    TABLE_CONTROL_LOG: Optional[str]
     DATABASE_URL: Optional[str]
     
-        
+    TABLE_CACHE_DATA_ACCESS: Optional[str]
+    TABLE_USERS: Optional[str]
