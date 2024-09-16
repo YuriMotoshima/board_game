@@ -1,8 +1,11 @@
 import logging
+
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
+
 from app.config.settings import Settings
-from app.data.models import table_registry  # Importamos apenas o registry dos modelos
+from app.data.models import \
+    table_registry  # Importamos apenas o registry dos modelos
 
 # Carrega as configurações do banco de dados
 Settings = Settings()

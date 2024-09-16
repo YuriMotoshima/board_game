@@ -1,5 +1,6 @@
 from json import loads
 
+import geocoder
 from fastapi import HTTPException, Request, status
 from fastapi.responses import JSONResponse
 from sqlalchemy import select
@@ -7,8 +8,9 @@ from sqlalchemy.orm import Session as SQLAlchemySession
 from starlette.middleware.base import (BaseHTTPMiddleware,
                                        RequestResponseEndpoint)
 from starlette.types import ASGIApp
+
 from app.data.database import engine
-import geocoder
+
 
 class HeaderValidationMiddleware(BaseHTTPMiddleware):
     """HeaderValidationMiddleware Middleware.

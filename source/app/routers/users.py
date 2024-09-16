@@ -2,12 +2,13 @@ from http import HTTPStatus
 from typing import Annotated, List
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-from app.data.schemas import SchemaUsers, SchemaResponseUsers
-from app.data.models import Users
-from app.data.database import get_session
 from sqlalchemy.future import select
- 
+from sqlalchemy.orm import Session
+
+from app.data.database import get_session
+from app.data.models import Users
+from app.data.schemas import SchemaResponseUsers, SchemaUsers
+
 db_session = Annotated[Session, Depends(get_session)]
 
 router = APIRouter(prefix='/users', tags=['Users'])

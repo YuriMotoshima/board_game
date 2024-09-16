@@ -1,6 +1,8 @@
 from datetime import datetime
+
+from sqlalchemy import JSON, func
 from sqlalchemy.orm import Mapped, mapped_column, registry
-from sqlalchemy import func, JSON
+
 from app.config.settings import Settings
 
 # Registro das tabelas no table_registry
