@@ -1,15 +1,17 @@
 from json import loads
 
 import geocoder
-from fastapi import HTTPException, Request, status
+from fastapi import BackgroundTasks, Depends, HTTPException, Request, status
 from fastapi.responses import JSONResponse
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session as SQLAlchemySession
 from starlette.middleware.base import (BaseHTTPMiddleware,
                                        RequestResponseEndpoint)
 from starlette.types import ASGIApp
 
-from app.data.database import engine
+from app.data.database import get_session
+from app.data.models import CacheData
 
 
 class HeaderValidationMiddleware(BaseHTTPMiddleware):
@@ -27,8 +29,6 @@ class HeaderValidationMiddleware(BaseHTTPMiddleware):
         _type_: None
     """
     
-    Session = SQLAlchemySession(engine)
-
     def __init__(self, app: ASGIApp):
         super().__init__(app)
 
@@ -66,8 +66,10 @@ class HeaderValidationMiddleware(BaseHTTPMiddleware):
             if client_host:
                 request.state.user_language = request.headers.get("Accept-Language")
                 request.state.user_agent = request.headers.get("User-Agent")
-                request.state.ip = client_host
+                request.state.client_host = client_host
                 request.state.geolocation = await self.get_geolocation(client_host=client_host)
+                
+                self.updated_cachedata(state=request.state, background_tasks=BackgroundTasks())
                 
             response = await call_next(request)
             return response
@@ -90,7 +92,7 @@ class HeaderValidationMiddleware(BaseHTTPMiddleware):
             }
         else:
             return {"error": "Geolocation not found"}
-
+        
 
     async def get_current_tenant(self, authorization: str, path: str, session: SQLAlchemySession):
         """get_current_tenant Verifica se tem tenant e verifica se o path é permitido para esse Requisitante
@@ -130,6 +132,12 @@ class HeaderValidationMiddleware(BaseHTTPMiddleware):
         session.refresh(log_item)
 
         return log_item.tenant
+
+
+    async def updated_cachedata(self, state:dict, background_tasks: BackgroundTasks, session:AsyncSession = Depends(get_session)):
+        cache = CacheData(**state)
+        session.add(cache)
+        background_tasks.add_task(session.commit)
 
 
 def get_current_tenant(request: Request) -> int:
