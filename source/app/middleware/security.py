@@ -1,7 +1,7 @@
 from json import loads
 
 import geocoder
-from fastapi import BackgroundTasks, Depends, HTTPException, Request, status
+from fastapi import HTTPException, Request, status
 from fastapi.responses import JSONResponse
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -10,7 +10,7 @@ from starlette.middleware.base import (BaseHTTPMiddleware,
                                        RequestResponseEndpoint)
 from starlette.types import ASGIApp
 
-from app.data.database import get_session
+from app.data.database import async_session
 from app.data.models import CacheData
 
 
@@ -49,6 +49,11 @@ class HeaderValidationMiddleware(BaseHTTPMiddleware):
         try:
             # auth = request.headers.get('Authorization')
             client_host = request.client.host
+            headers_dict = {key: value for key, value in request.headers.items()}
+            scope_cleaned = {
+                key: str(value) if isinstance(value, (dict, list, str, int, float)) else repr(value)
+                for key, value in request.scope.items()
+            }
             _path = request.scope['path']
             
             # disponibilizar o Swagger
@@ -66,10 +71,15 @@ class HeaderValidationMiddleware(BaseHTTPMiddleware):
             if client_host:
                 request.state.user_language = request.headers.get("Accept-Language")
                 request.state.user_agent = request.headers.get("User-Agent")
+                request.state.path = _path
                 request.state.client_host = client_host
+                request.state.headers = headers_dict
+                request.state.scopes = scope_cleaned
                 request.state.geolocation = await self.get_geolocation(client_host=client_host)
                 
-                self.updated_cachedata(state=request.state, background_tasks=BackgroundTasks())
+                async with async_session() as session:
+                    await self.updated_cachedata(state=request.state._state, session=session)
+
                 
             response = await call_next(request)
             return response
@@ -134,10 +144,10 @@ class HeaderValidationMiddleware(BaseHTTPMiddleware):
         return log_item.tenant
 
 
-    async def updated_cachedata(self, state:dict, background_tasks: BackgroundTasks, session:AsyncSession = Depends(get_session)):
+    async def updated_cachedata(self, state:dict, session:AsyncSession):
         cache = CacheData(**state)
         session.add(cache)
-        background_tasks.add_task(session.commit)
+        await session.commit()
 
 
 def get_current_tenant(request: Request) -> int:
