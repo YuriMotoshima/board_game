@@ -1,7 +1,8 @@
 from typing import Optional
 
-from app.security.security import get_password_hash
 from pydantic import BaseModel, EmailStr, field_validator
+
+from app.security.security import get_password_hash
 
 
 class SchemaMessage(BaseModel):
