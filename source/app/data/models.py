@@ -16,10 +16,10 @@ class Users:
     __tablename__ = f"{Settings.TABLE_USERS}"
     
     id : Mapped[int] = mapped_column(init=False, primary_key=True, autoincrement=True)
-    name: Mapped[str] = mapped_column(unique=False)
-    email: Mapped[str] = mapped_column(unique=True)
-    password: Mapped[str] = mapped_column(unique=False)
-    nickname: Mapped[str] = mapped_column(unique=True)
+    name: Mapped[str] = mapped_column(unique=False, nullable=False)
+    email: Mapped[str] = mapped_column(unique=True, nullable=False)
+    password: Mapped[str] = mapped_column(unique=False, nullable=False)
+    nickname: Mapped[str] = mapped_column(unique=True, nullable=False)
     created_by: Mapped[str] = mapped_column(init=False, unique=False, server_default="System")
     created_at: Mapped[datetime] = mapped_column(init=False, unique=False, server_default=func.now())
     updated_by: Mapped[str] = mapped_column(init=False, unique=False, nullable=True, server_default="System")

@@ -5,10 +5,11 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.future import select
 from sqlalchemy.orm import Session
 
+from app.security.security import verify_password
 from app.data.database import get_session
 from app.data.models import Users
 from app.data.schemas import (SchemaPatchUser, SchemaPutUser,
-                              SchemaResponseUsers, SchemaUsers)
+                              SchemaResponseUsers, SchemaUsers, SchemaPutUserPassword)
 
 db_session = Annotated[Session, Depends(get_session)]
 
@@ -57,13 +58,10 @@ async def update_user(user_id: int, user: SchemaPutUser, session: db_session):
     if not db_user:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="User not found.")
     
-    # Atualiza todos os campos do recurso
-    db_user.name = user.name
-    db_user.email = user.email
-    db_user.nickname = user.nickname
-    db_user.password = user.password
-    db_user.updated_by = "System"  # ou o usuário que está fazendo a atualização
-    
+    user_data = user.model_dump(exclude_unset=True)
+    for key, value in user_data.items():
+        setattr(db_user, key, value)
+        
     await session.commit()
     session.refresh(db_user)
     
@@ -77,19 +75,30 @@ async def partial_update_user(user_id: int, user: SchemaPatchUser, session: db_s
     if not db_user:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="User not found.")
     
-    # Atualiza apenas os campos que foram passados no PATCH
-    if user.name is not None:
-        db_user.name = user.name
-    if user.email is not None:
-        db_user.email = user.email
-    if user.nickname is not None:
-        db_user.nickname = user.nickname
-    if user.password is not None:
-        db_user.password = user.password
-    
-    db_user.updated_by = "System"  # ou o usuário que está fazendo a atualização
+    user_data = user.model_dump(exclude_unset=True)
+    for key, value in user_data.items():
+        setattr(db_user, key, value)
     
     await session.commit()
     session.refresh(db_user)
     
     return db_user
+
+
+@router.put('/{user_id}', status_code=HTTPStatus.OK, response_model=SchemaResponseUsers)
+async def update_user(user_id: int, user: SchemaPutUserPassword, session: db_session):
+    db_user = await session.scalar(select(Users).where(Users.id == user_id, Users.email == user.email))
+    
+    if not db_user:
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="User not found.")
+    
+    if not verify_password(plain_password=user.password, hashed_password=db_user.password):
+        raise HTTPException(status_code=HTTPStatus.UNAUTHORIZED, detail="Verify the last password.")
+    
+    db_user.password = user.new_password
+    session.add(db_user)
+    await session.commit()
+    session.refresh(db_user)
+    
+    return db_user
+

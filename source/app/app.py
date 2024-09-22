@@ -4,7 +4,7 @@ from fastapi import FastAPI, Request
 
 from app.data.database import lifespan  # Agora o lifespan vem de database.py
 from app.data.schemas import SchemaMessage
-from app.middleware.security import HeaderValidationMiddleware
+from app.middleware.middle import HeaderValidationMiddleware
 from app.routers import users
 
 # Inicializa a aplicação FastAPI com o ciclo de vida definido

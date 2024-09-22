@@ -1,6 +1,7 @@
 from typing import Optional
 
-from pydantic import BaseModel, EmailStr
+from app.security.security import get_password_hash
+from pydantic import BaseModel, EmailStr, field_validator
 
 
 class SchemaMessage(BaseModel):
@@ -10,10 +11,15 @@ class SchemaMessage(BaseModel):
     state: Optional[dict]
     
 class SchemaUsers(BaseModel):
-    name: Optional[str]
+    name: str
     email: EmailStr
-    nickname: Optional[str]
+    nickname: str
     password: str
+    
+    @field_validator('password', mode='before')
+    def hash_password(cls, value: str) -> str:
+        return get_password_hash(value)
+
 
 class SchemaResponseUsers(BaseModel):
     id: Optional[int]
@@ -26,10 +32,19 @@ class SchemaPutUser(BaseModel):
     name: str
     email: EmailStr
     nickname: str
-    password: str
+
 
 class SchemaPatchUser(BaseModel):
     name: Optional[str]
     email: Optional[EmailStr]
     nickname: Optional[str]
-    password: Optional[str]
+    
+    
+class SchemaPutUserPassword(BaseModel):
+    email: EmailStr
+    password: str
+    new_password: str
+    
+    @field_validator('new_password', mode='before')
+    def hash_password(cls, value: str) -> str:
+        return get_password_hash(value)
