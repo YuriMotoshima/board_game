@@ -3,9 +3,9 @@ from http import HTTPStatus
 from fastapi import FastAPI, Request
 
 from app.data.database import lifespan  # Agora o lifespan vem de database.py
-from app.data.schemas import SchemaMessage
 from app.middleware.middle import HeaderValidationMiddleware
 from app.routers import users
+from app.schemas.schemas_users import SchemaMessage
 
 # Inicializa a aplicação FastAPI com o ciclo de vida definido
 app = FastAPI(lifespan=lifespan)

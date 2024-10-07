@@ -10,7 +10,8 @@ class SchemaMessage(BaseModel):
     headers: Optional[dict]
     scope: Optional[dict | str]
     state: Optional[dict]
-    
+
+
 class SchemaUsers(BaseModel):
     name: str
     email: EmailStr

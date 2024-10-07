@@ -1,9 +1,10 @@
+from http import HTTPStatus
 from typing import TypeVar
+
+from fastapi import HTTPException
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import MappedAsDataclass
-from fastapi import HTTPException
-from http import HTTPStatus
-from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 DBModels = TypeVar('TDBModels', bound=MappedAsDataclass)
 

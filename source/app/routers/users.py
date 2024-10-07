@@ -6,14 +6,15 @@ from sqlalchemy import and_, or_
 from sqlalchemy.future import select
 from sqlalchemy.orm import Session
 
+from app.config.collections_exceptions import collections_exceptions
 from app.data.database import get_session
 from app.data.models import Users
-from app.data.schemas import (SchemaPatchUser, SchemaPutUser,
-                              SchemaPutUserPassword, SchemaResponseUsers,
-                              SchemaUsers)
-from app.security.security import verify_password
 from app.modules.db_tools import _send_to_data
-from app.config.collections_exceptions import collections_exceptions
+from app.schemas.schemas_users import (SchemaPatchUser, SchemaPutUser,
+                                       SchemaPutUserPassword,
+                                       SchemaResponseUsers, SchemaUsers)
+from app.security.security import verify_password
+
 db_session = Annotated[Session, Depends(get_session)]
 
 router = APIRouter(prefix='/users', tags=['Users'])
@@ -64,7 +65,7 @@ async def create_user(user: SchemaUsers, session: db_session):
 
 
 @router.get('/{user_id}', status_code=HTTPStatus.OK, response_model=SchemaResponseUsers)
-async def get_user(user:SchemaUsers, user_id:int, session:db_session):
+async def get_user(user_id:int, session:db_session):
     db_user = await session.scalar(
         select(Users).where(Users.id == user_id)
     )

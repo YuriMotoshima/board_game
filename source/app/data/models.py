@@ -25,6 +25,7 @@ class Users:
     updated_by: Mapped[str] = mapped_column(init=False, unique=False, nullable=True, server_default="System")
     updated_at: Mapped[datetime] = mapped_column(init=False, unique=False, nullable=True, onupdate=func.now())
 
+
 @table_registry.mapped_as_dataclass
 class CacheData:
     __tablename__ = f"{Settings.TABLE_CACHE_DATA_ACCESS}"
