@@ -1,11 +1,12 @@
 # tests/tests_database/test_send_to_data.py
-import pytest
 from http import HTTPStatus
+
+import pytest
 from fastapi import HTTPException
-from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+from sqlalchemy.exc import SQLAlchemyError
 
 from app.data.models import Users
-from app.modules.db_tools import _send_to_data  # Atualize o caminho conforme necessário
+from app.modules.db_tools import _send_to_data
 
 @pytest.mark.asyncio
 async def test_send_to_data_success(session):

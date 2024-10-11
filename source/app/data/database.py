@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
 from app.config.settings import Settings
-from app.data.models import  table_registry
+from app.data.models import table_registry
 
 # Carrega as configurações do banco de dados
 Settings = Settings()

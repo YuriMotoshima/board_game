@@ -1,7 +1,7 @@
 
 import pytest
-
 from sqlalchemy import select
+
 from app.data.models import Users
 
 
