@@ -8,6 +8,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from app.data.models import Users
 from app.modules.db_tools import _send_to_data
 
+
 @pytest.mark.asyncio
 async def test_send_to_data_success(session):
     # Criação de uma instância válida
