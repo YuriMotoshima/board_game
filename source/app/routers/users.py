@@ -1,7 +1,7 @@
 from http import HTTPStatus
 from typing import Annotated, List
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import and_, or_
 from sqlalchemy.future import select
 from sqlalchemy.orm import Session
@@ -20,7 +20,10 @@ db_session = Annotated[Session, Depends(get_session)]
 router = APIRouter(prefix='/users', tags=['Users'])
 
 @router.get('/', status_code=HTTPStatus.OK, response_model=List[SchemaResponseUsers])
-async def get_users(session:db_session, limit: int = 10 , offset:int = 0):
+async def get_users(session:db_session,
+                    limit: int = Query(10, gt=0, le=20, description="Limit must be between 1 and 20"), 
+                    offset: int = Query(0, ge=0, description="Offset must be 0 or greater")
+                    ):
     result = await session.scalars(
         select(Users).limit(limit).offset(offset)
     )

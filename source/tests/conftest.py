@@ -9,6 +9,7 @@ from app.data.models import table_registry
 
 @pytest.fixture()
 def client_app():
+    # App FastApi
     return TestClient(app)
 
 

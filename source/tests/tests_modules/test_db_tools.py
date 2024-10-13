@@ -1,4 +1,3 @@
-# tests/tests_database/test_send_to_data.py
 from http import HTTPStatus
 
 import pytest
@@ -11,15 +10,19 @@ from app.modules.db_tools import _send_to_data
 
 @pytest.mark.asyncio
 async def test_send_to_data_success(session):
+    """test_send_to_data_success
+
+    Args:
+        session (engine): Session to connection database
+    """
     # Criação de uma instância válida
     new_user = Users(email="joao.silva@tests.com", name="Joao Silva", nickname="SilvaJ", password="Teste@123")
     
     # Chamada da função a ser testada
     result = await _send_to_data(new_user, session)
     
-    # Asserções
     assert result == new_user
-    assert result.id is not None  # Verifica se o ID foi gerado
+    assert result.id is not None
     
     # Verifica no banco de dados se o usuário foi realmente adicionado
     fetched_user = await session.get(Users, result.id)
