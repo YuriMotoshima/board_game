@@ -63,7 +63,7 @@ async def create_user(user: SchemaUsers, session: db_session):
         collections_exceptions(err)
         raise HTTPException(
             status_code=HTTPStatus.INTERNAL_SERVER_ERROR, 
-            detail=f"An unexpected error occurred, verify logs the application."
+            detail="An unexpected error occurred, verify logs the application."
         )
 
 

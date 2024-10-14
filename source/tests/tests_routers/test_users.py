@@ -1,5 +1,7 @@
 import pytest
 
+from app.schemas.schemas_users import SchemaUsers
+
 
 @pytest.mark.asyncio
 async def test_get_app(client_app):
@@ -107,3 +109,34 @@ async def test_get_users_large_limit(client_app):
     response = client_app.get("/users/?limit=20&offset=0")
     assert response.status_code == 200
     assert isinstance(response.json(), list)
+    
+
+
+@pytest.mark.asyncio
+async def test_create_user(client_app):
+    new_user = SchemaUsers(email="joao.silva@tests.com", name="Joao Silva", nickname="SilvaJ", password="Teste@123")
+
+    response = client_app.post(url="/users/", json=new_user.model_dump())
+    
+    assert response.status_code == 201
+    assert response.json()['email'] == new_user.email
+    
+
+@pytest.mark.asyncio
+async def test_create_user_email_duplicated(client_app, add_user_to_db):
+    
+    new_user_data = {
+        "email": "tests.joao.silva@tests.com",
+        "name": "Tests Joao Silva",
+        "nickname": "TestsSilvaJ",
+        "password": "Teste@123.tests"
+    }
+    
+    await add_user_to_db(**new_user_data)
+    
+    response = client_app.post(url="/users/", json=new_user_data)
+    
+    assert response.status_code == 400
+    assert new_user_data['email'] in response.json()
+    assert response.json()['email'] == new_user_data['email']
+    assert response.json()['detail'] == "Email already exists"
