@@ -99,7 +99,9 @@ async def partial_update_user(user_id: int, user: SchemaPatchUser, session: db_s
     if not db_user:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="User not found.")
     
-    user_data = user.model_dump(exclude_unset=True)
+    # Filtra apenas os campos que possuem valores que não são None
+    user_data = {key: value for key, value in user.model_dump(exclude_unset=True).items() if value is not None}
+    
     for key, value in user_data.items():
         setattr(db_user, key, value)
     

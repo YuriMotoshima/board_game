@@ -4,15 +4,14 @@ from unittest.mock import patch
 import pytest
 from fastapi import HTTPException
 
-from app.routers.users import (get_user, get_users, 
-                               create_user, update_user, 
-                               partial_update_user, update_user_password)
-
+from app.routers.users import (create_user, get_user, get_users,
+                               partial_update_user, update_user,
+                               update_user_password)
 from app.schemas.schemas_users import (SchemaPatchUser, SchemaPutUser,
-                                       SchemaPutUserPassword,
-                                       SchemaResponseUsers, SchemaUsers)
+                                       SchemaPutUserPassword, SchemaUsers)
+from app.security.security import verify_password
 
-    
+
 @pytest.mark.asyncio
 async def test_get_user_directly(add_user_to_db, session):
     new_user_data = {
@@ -166,4 +165,122 @@ async def test_put_update_user_not_found(add_user_to_db, session):
 
     assert exc_info.value.status_code == HTTPStatus.NOT_FOUND
     assert "User not found." in exc_info.value.detail
+    
+
+@pytest.mark.asyncio
+async def test_patch_partial_update_user_not_found(add_user_to_db, session):
+    _user = SchemaPatchUser(
+        name=None,
+        email='tests.joao.silva_0@tests.com',
+        nickname=None
+    )
+    
+    new_user_data = {
+        "email": "tests.joao.silva@tests.com",
+        "name": "Tests Joao Silva",
+        "nickname": "TestsSilvaJ",
+        "password": "Teste@123.tests"
+    }
+    await add_user_to_db(**new_user_data)
+    
+    with pytest.raises(HTTPException) as exc_info:
+        await partial_update_user(user_id=10000, user=_user, session=session)
+
+    assert exc_info.value.status_code == HTTPStatus.NOT_FOUND
+    assert "User not found." in exc_info.value.detail
+    
+
+@pytest.mark.asyncio
+async def test_patch_partial_update_user_by_email(add_user_to_db, session):
+    _user = SchemaPatchUser(
+        name=None,
+        email="tests.joao.silva_0@tests.com",
+        nickname=None
+    )
+    
+    new_user_data = {
+        "email": "tests.joao.silva@tests.com",
+        "name": "Tests Joao Silva",
+        "nickname": "TestsSilvaJ",
+        "password": "Teste@123.tests"
+    }
+    
+    await add_user_to_db(**new_user_data)
+    
+    response = await partial_update_user(user_id=1, user=_user, session=session)
+
+    assert response.email == _user.email
+
+
+@pytest.mark.asyncio
+async def test_patch_partial_update_user_by_nickname(add_user_to_db, session):
+    _user = SchemaPatchUser(
+        name=None,
+        email=None,
+        nickname='TestsSilvaJ0'
+    )
+    
+    new_user_data = {
+        "email": "tests.joao.silva@tests.com",
+        "name": "Tests Joao Silva",
+        "nickname": "TestsSilvaJ",
+        "password": "Teste@123.tests"
+    }
+    await add_user_to_db(**new_user_data)
+    
+    response = await partial_update_user(user_id=1, user=_user, session=session)
+
+    assert response.nickname == _user.nickname
+
+
+@pytest.mark.asyncio
+async def test_put_update_user_password_not_found(session):
+    _user = SchemaPutUserPassword(
+        email='tests.joao.silva@tests.com',
+        password='tesTeste@123.teststs003',
+        new_password='Teste@123.tests002'
+    )
+
+    with pytest.raises(HTTPException) as exc_info:
+        await partial_update_user(user_id=10000, user=_user, session=session)
+
+    assert exc_info.value.status_code == HTTPStatus.NOT_FOUND
+    assert "User not found." in exc_info.value.detail
+
+
+@pytest.mark.asyncio
+async def test_put_update_user_password_wrong_pass_wrong_email(session):
+    _user = SchemaPutUserPassword(
+        email='tests.joao.silva@tests.com', # <<=== esse e-mail não bate com o criado
+        password='tesTeste@123.teststs003',
+        new_password='Teste@123.tests002'
+    )
+    new_user = SchemaUsers(email="joao.silva@tests.com", name="Joao Silva", nickname="SilvaJ", password="Teste@123")
+
+    response = await create_user(user=new_user, session=session)
+    
+    with pytest.raises(HTTPException) as exc_info:
+        await update_user_password(user_id=response.id, user=_user, session=session)
+
+    assert exc_info.value.status_code == HTTPStatus.NOT_FOUND
+    assert "User not found." in exc_info.value.detail
+    
+
+
+@pytest.mark.asyncio
+async def test_put_update_user_password(session):
+    new_pass = 'Teste@123.tests002'
+    _user = SchemaPutUserPassword(
+        email='joao.silva@tests.com',
+        password='Teste@123',
+        new_password=new_pass
+    )
+    new_user = SchemaUsers(email="joao.silva@tests.com", name="Joao Silva", nickname="SilvaJ", password="Teste@123")
+
+    response_create = await create_user(user=new_user, session=session)
+    
+    response = await update_user_password(user_id=response_create.id, user=_user, session=session)
+    
+    assert verify_password(plain_password=new_pass, hashed_password=response.password)
+
     

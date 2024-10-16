@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pydantic import BaseModel, EmailStr, field_validator
+from pydantic import BaseModel, EmailStr, Field, field_validator
 
 from app.security.security import get_password_hash
 
@@ -37,9 +37,9 @@ class SchemaPutUser(BaseModel):
 
 
 class SchemaPatchUser(BaseModel):
-    name: Optional[str]
-    email: Optional[EmailStr]
-    nickname: Optional[str]
+    name: Optional[str] = Field(default=None)
+    email: Optional[EmailStr] = Field(default=None)
+    nickname: Optional[str] = Field(default=None)
     
     
 class SchemaPutUserPassword(BaseModel):
