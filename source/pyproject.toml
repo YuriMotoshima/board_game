@@ -46,7 +46,14 @@ enabled = true
 asyncio_mode = "auto"
 
 
+[tool.coverage.report]
+show_missing = true
+fail_under = 80  # Pode ajustar conforme o nível desejado de cobertura mínima
+skip_covered = true  # Isso evitará mostrar linhas já cobertas
+
+
 [tool.coverage.run]
+source = ["app"]
 omit = [
     "config/*",
     "images/*",
@@ -57,4 +64,4 @@ omit = [
 [tool.taskipy.tasks]
 test = 'pytest -s -x --cov=app -vv'
 post_test = 'coverage html'
-clear = "isort . && powershell -Command \"Get-ChildItem -Path . -Recurse -Directory -Filter '__pycache__' | Remove-Item -Recurse -Force\""
+clear = "isort . && powershell -Command \"Get-ChildItem -Path . -Recurse -Directory -Filter '__pycache__' | Remove-Item -Recurse -Force; Get-ChildItem -Path . -Recurse -Directory -Filter 'logs' | Remove-Item -Recurse -Force; Get-ChildItem -Path . -Recurse -Directory -Filter 'htmlcov' | Remove-Item -Recurse -Force\""

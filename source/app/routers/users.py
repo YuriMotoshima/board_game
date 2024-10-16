@@ -75,7 +75,6 @@ async def get_user(user_id:int, session:db_session):
     if not db_user:
         raise HTTPException(HTTPStatus.BAD_REQUEST, detail='User not found.') 
     
-    session.refresh(db_user)
     return db_user
 
 
@@ -108,7 +107,7 @@ async def partial_update_user(user_id: int, user: SchemaPatchUser, session: db_s
 
 
 @router.put('/{user_id}', status_code=HTTPStatus.OK, response_model=SchemaResponseUsers)
-async def update_user(user_id: int, user: SchemaPutUserPassword, session: db_session):
+async def update_user_password(user_id: int, user: SchemaPutUserPassword, session: db_session):
     db_user = await session.scalar(select(Users).where(and_(Users.id == user_id, Users.email == user.email)))
     
     if not db_user:

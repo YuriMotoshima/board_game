@@ -2,7 +2,7 @@ from http import HTTPStatus
 
 from fastapi import FastAPI, Request
 
-from app.data.database import lifespan  # Agora o lifespan vem de database.py
+from app.data.database import lifespan
 from app.middleware.middle import HeaderValidationMiddleware
 from app.routers import users
 from app.schemas.schemas_users import SchemaMessage

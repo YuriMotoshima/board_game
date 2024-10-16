@@ -5,11 +5,9 @@ from app.data.models import Users
 from app.security.security import get_password_hash
 
 
-class UsersFactory(factory.alchemy.SQLAlchemyModelFactory):
+class UsersFactory(factory.Factory):
     class Meta:
         model = Users
-        sqlalchemy_session = AsyncSession
-        sqlalchemy_session_persistence = "commit"
 
     email = factory.Faker('email')
     name = factory.Faker('name')

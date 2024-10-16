@@ -50,8 +50,8 @@ async def session():
         
 @pytest.fixture()
 async def add_user_to_db(session):
-    async def _add_user_to_db(*arg, **kwargs):
-        user = UsersFactory(*arg, **kwargs)
+    async def _add_user_to_db(**kwargs):
+        user = UsersFactory.build(**kwargs)
         try:
             session.add(user)
             await session.commit()
@@ -60,4 +60,5 @@ async def add_user_to_db(session):
             raise
         return user
     return _add_user_to_db
+
 
