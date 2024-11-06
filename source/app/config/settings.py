@@ -12,3 +12,6 @@ class Settings(BaseSettings):
     
     TABLE_CACHE_DATA_ACCESS: Optional[str]
     TABLE_USERS: Optional[str]
+    SECRET_KEY: Optional[str]
+    ALGORITHM: Optional[str]
+    ACCESS_TOKEN_EXPIRE_MINUTES: Optional[int]

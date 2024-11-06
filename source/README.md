@@ -2,78 +2,73 @@ tree /F > estrutura_diretorios.txt
 
 ```sh
 .source\
-ª   .coverage
-ª   .dockerignore
-ª   .env
-ª   database.db
-ª   Dockerfile
-ª   estrutura_diretorios.txt
-ª   poetry.lock
-ª   pyproject.toml
-ª   
-+---.pytest_cache
-ª   ª   .gitignore
-ª   ª   CACHEDIR.TAG
-ª   ª   README.md
-ª   ª   
-ª   +---v
-ª       +---cache
-ª               stepwise
-ª               
-+---.vscode
-ª       launch.json
-ª       settings.json
-ª       
-+---app
-ª   ª   app.py
-ª   ª   __init__.py
-ª   ª   
-ª   +---config
-ª   ª       collections_exceptions.py
-ª   ª       log.py
-ª   ª       settings.py
-ª   ª       
-ª   +---data
-ª   ª       database.py
-ª   ª       models.py
-ª   ª       
-ª   +---middleware
-ª   ª       middle.py
-ª   ª       
-ª   +---modules
-ª   ª       db_tools.py
-ª   ª       
-ª   +---routers
-ª   ª       users.py
-ª   ª       
-ª   +---schemas
-ª   ª       schemas_users.py
-ª   ª       
-ª   +---security
-ª           security.py
-ª           
-+---tests
-    ª   conftest.py
-    ª   __init__.py
-    ª   
-    +---mocks
-    ª       factories.py
-    ª       
-    +---tests_config
-    ª       test_exceptions.py
-    ª       test_logs.py
-    ª       
-    +---tests_database
-    ª       test_db.py
-    ª       
-    +---tests_middleware
-    ª       test_middleware.py
-    ª       
-    +---tests_modules
-    ª       test_db_tools.py
-    ª       
-    +---tests_routers
+│   .coverage
+│   .dockerignore
+│   .env
+│   database.db
+│   Dockerfile
+│   estrutura_diretorios.txt
+│   poetry.lock
+│   pyproject.toml
+│   README.md
+│   
+├───app
+│   │   app.py
+│   │   __init__.py
+│   │   
+│   ├───config
+│   │       collections_exceptions.py
+│   │       log.py
+│   │       settings.py
+│   │       
+│   ├───data
+│   │       database.py
+│   │       models.py
+│   │       
+│   ├───middleware
+│   │       middle.py
+│   │       
+│   ├───modules
+│   │       db_tools.py
+│   │       
+│   ├───routers
+│   │       users.py
+│   │       
+│   ├───schemas
+│   │       schemas_users.py
+│   │       
+│   └───security
+│           security.py
+│           
+├───logs
+│   └───13-10-2024
+│           [DEV] Logs - 13-10-2024 12.log
+│           [DEV] Logs - 13-10-2024 16.log
+│           [DEV] Logs - 13-10-2024 22.log
+│           
+└───tests
+    │   conftest.py
+    │   __init__.py
+    │   
+    ├───mocks
+    │       factories.py
+    │       
+    ├───tests_app
+    │       test_app.py
+    │       
+    ├───tests_config
+    │       test_exceptions.py
+    │       test_logs.py
+    │       
+    ├───tests_database
+    │       test_db.py
+    │       
+    ├───tests_middleware
+    │       test_middleware.py
+    │       
+    ├───tests_modules
+    │       test_db_tools.py
+    │       
+    └───tests_routers
             test_users.py
-            
-
 ```
