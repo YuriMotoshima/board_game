@@ -1,5 +1,6 @@
 import pytest
 from fastapi.testclient import TestClient
+from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -32,6 +33,26 @@ def client_app(session):
         
     app.dependency_overrides.clear()
     
+
+@pytest.fixture
+async def client_app_async(session):
+    """client_app up instance fastapi
+
+    Args:
+        session (engine): Connetion SqlAlchemy of test
+    """
+    def get_session_override():
+        return session
+
+    # Override da dependência do banco de dados
+    app.dependency_overrides[get_session] = get_session_override
+
+    async with AsyncClient(app=app, base_url="http://test") as client:
+    # async with AsyncClient(app=app) as client:
+        yield client
+
+    app.dependency_overrides.clear()
+
 
 @pytest.fixture()
 async def session():

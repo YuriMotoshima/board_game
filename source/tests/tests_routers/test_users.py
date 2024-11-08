@@ -266,7 +266,6 @@ async def test_put_update_user_password_wrong_pass_wrong_email(session):
     assert "User not found." in exc_info.value.detail
     
 
-
 @pytest.mark.asyncio
 async def test_put_update_user_password(session):
     new_pass = 'Teste@123.tests002'
