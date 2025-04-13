@@ -3,11 +3,10 @@ import logging
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
-from app.config.settings import Settings
-from app.data.models import table_registry
+from app import _settings as Settings
+from app.models.base_model import BaseModel
 
 # Carrega as configurações do banco de dados
-Settings = Settings()
  
 # Configura o engine dependendo do ambiente
 if Settings.TEST:
@@ -25,9 +24,8 @@ async def get_session():
 
 # Função para criar as tabelas
 async def create_tables():
-    metadata = table_registry.metadata
     async with engine.begin() as conn:
-        await conn.run_sync(metadata.create_all)
+        await conn.run_sync(BaseModel.metadata.create_all)
 
 # Ciclo de vida da aplicação, que vai criar as tabelas na inicialização
 async def lifespan(app):

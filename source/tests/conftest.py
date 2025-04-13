@@ -4,10 +4,10 @@ from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
+from app import _settings as Settings
 from app.app import app
-from app.config.settings import Settings
 from app.data.database import get_session
-from app.data.models import table_registry
+from app.models.CacheData import table_registry
 from tests.mocks.factories import UsersFactory
 
 

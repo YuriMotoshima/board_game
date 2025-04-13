@@ -11,7 +11,7 @@ from starlette.middleware.base import (BaseHTTPMiddleware,
 from starlette.types import ASGIApp
 
 from app.data.database import async_session
-from app.data.models import CacheData
+from app.models.CacheData import CacheData
 
 
 class HeaderValidationMiddleware(BaseHTTPMiddleware):
@@ -47,7 +47,6 @@ class HeaderValidationMiddleware(BaseHTTPMiddleware):
             _type_: Response
         """
         try:
-            # auth = request.headers.get('Authorization')
             client_host = request.client.host
             headers_dict = {key: value for key, value in request.headers.items()}
             scope_cleaned = {
@@ -78,8 +77,8 @@ class HeaderValidationMiddleware(BaseHTTPMiddleware):
                 request.state.geolocation = await self.get_geolocation(client_host=client_host)
                 
                 async with async_session() as session:
-                    await self.updated_cachedata(state=request.state._state, session=session)
-
+                    cache_data = await self.updated_cachedata(state=request.state._state, session=session)
+                    request.state.cache_data = cache_data
                 
             response = await call_next(request)
             return response
@@ -105,7 +104,9 @@ class HeaderValidationMiddleware(BaseHTTPMiddleware):
             return {"error": "Geolocation not found"}
         
 
-    async def updated_cachedata(self, state:dict, session:AsyncSession):
+    async def updated_cachedata(self, state:dict, session:AsyncSession) -> CacheData:
         cache = CacheData(**state)
         session.add(cache)
         await session.commit()
+        await session.refresh(cache)
+        return cache

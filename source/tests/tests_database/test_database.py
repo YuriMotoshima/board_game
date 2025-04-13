@@ -1,10 +1,10 @@
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from app.data.models import table_registry
-from app.data.database import get_session, create_tables, async_session, engine
-from app.config.settings import Settings
 
-settings = Settings()
+from app import _settings as Settings
+from app.data.database import async_session, create_tables, engine, get_session
+from app.models.CacheData import table_registry
+
 
 # Teste da sessão assíncrona
 @pytest.mark.asyncio

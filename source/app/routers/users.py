@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 from app.config.collections_exceptions import collections_exceptions
 from app.data.database import get_session
-from app.data.models import Users
+from app.models import Users
 from app.modules.db_tools import _send_to_data
 from app.schemas.schemas_users import (SchemaPatchUser, SchemaPutUser,
                                        SchemaPutUserPassword,

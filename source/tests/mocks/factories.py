@@ -1,7 +1,7 @@
 import factory
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.data.models import Users
+from app.models.CacheData import Users
 from app.security.security import get_password_hash
 
 

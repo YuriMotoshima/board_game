@@ -4,7 +4,7 @@ import pytest
 from fastapi import HTTPException
 from sqlalchemy.exc import SQLAlchemyError
 
-from app.data.models import Users
+from app.models.CacheData import Users
 from app.modules.db_tools import _send_to_data
 
 

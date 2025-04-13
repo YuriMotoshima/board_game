@@ -5,8 +5,11 @@ from logging import getLogger
 
 from app.config.collections_exceptions import collections_exceptions
 from app.config.log import loginit
+from app.config.settings import Settings
 
 try:
+    _settings = Settings()
+    
     loginit()
     getLogger('google.auth').setLevel(logging.ERROR)
     getLogger('google.auth.transport').setLevel(logging.ERROR)

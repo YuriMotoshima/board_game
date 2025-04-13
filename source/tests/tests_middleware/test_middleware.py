@@ -6,8 +6,8 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.middleware.base import RequestResponseEndpoint
 
-from app.data.models import CacheData
 from app.middleware.middle import HeaderValidationMiddleware
+from app.models.CacheData import CacheData
 
 
 @pytest.mark.asyncio
