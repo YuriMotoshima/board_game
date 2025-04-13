@@ -14,15 +14,15 @@ async def test_get_session():
 
 # Teste para garantir que o engine está configurado corretamente no ambiente de teste
 def test_engine_is_sqlite_in_test_mode(monkeypatch):
-    monkeypatch.setattr(settings, 'TEST', True)
+    monkeypatch.setattr(Settings, 'TEST', True)
     engine_test = create_async_engine('sqlite+aiosqlite:///:memory:', echo=True)
     assert engine.url.drivername == engine_test.url.drivername
 
 # Teste para garantir que o engine é configurado com o DATABASE_URL no ambiente normal
 def test_engine_is_production_url(monkeypatch):
-    monkeypatch.setattr(settings, 'TEST', False)
-    monkeypatch.setattr(settings, 'DATABASE_URL', 'postgresql+asyncpg://user:password@localhost/testdb')
-    engine_prod = create_async_engine(settings.DATABASE_URL, echo=True)
+    monkeypatch.setattr(Settings, 'TEST', False)
+    monkeypatch.setattr(Settings, 'DATABASE_URL', 'postgresql+asyncpg://user:password@localhost/testdb')
+    engine_prod = create_async_engine(Settings.DATABASE_URL, echo=True)
     assert engine.url.drivername == engine_prod.url.drivername
 
 # Teste da criação de tabelas

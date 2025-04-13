@@ -5,13 +5,10 @@ tree /f /a > estrutura_diretorios.txt
 
 
 .source\
-|   .coverage
 |   .dockerignore
 |   .env
-|   database.db
 |   Dockerfile
 |   estrutura_diretorios.txt
-|   poetry.lock
 |   pyproject.toml
 |   README.md
 |   
@@ -22,13 +19,10 @@ tree /f /a > estrutura_diretorios.txt
 |   |   
 |   \---v
 |       \---cache
-|               lastfailed
-|               nodeids
 |               stepwise
 |               
 +---.vscode
 |       launch.json
-|       settings.json
 |       
 +---app
 |   |   app.py
@@ -41,10 +35,16 @@ tree /f /a > estrutura_diretorios.txt
 |   |       
 |   +---data
 |   |       database.py
-|   |       models.py
 |   |       
 |   +---middleware
 |   |       middle.py
+|   |       
+|   +---models
+|   |       base_model.py
+|   |       CacheData.py
+|   |       TokenData.py
+|   |       Users.py
+|   |       __init__.py
 |   |       
 |   +---modules
 |   |       db_tools.py
@@ -75,6 +75,7 @@ tree /f /a > estrutura_diretorios.txt
     |       test_logs.py
     |       
     +---tests_database
+    |       test_database.py
     |       test_db.py
     |       
     +---tests_middleware
