@@ -1,6 +1,7 @@
+from typing import List
 
 from sqlalchemy import JSON
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app import _settings as Settings
 from app.models.base_model import BaseModel
@@ -16,4 +17,5 @@ class CacheData(BaseModel):
     geolocation: Mapped[JSON] = mapped_column(JSON, nullable=True)
     headers: Mapped[JSON] = mapped_column(JSON, nullable=True)
     scopes: Mapped[JSON] = mapped_column(JSON, nullable=True)
-   
+
+    token_list: Mapped[List["TokenData"]] = relationship(back_populates="cache_data")

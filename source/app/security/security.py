@@ -35,3 +35,6 @@ def create_access_token(data:dict):
         "refresh_token": refresh_token,
         "token_type": "bearer"
     }
+    
+def decode_refresh_token(refresh_token:str):
+    return decode(refresh_token, Settings.SECRET_KEY, algorithms=[Settings.ALGORITHM])

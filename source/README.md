@@ -10,20 +10,7 @@ tree /f /a > estrutura_diretorios.txt
 |   Dockerfile
 |   estrutura_diretorios.txt
 |   pyproject.toml
-|   README.md
-|   
-+---.pytest_cache
-|   |   .gitignore
-|   |   CACHEDIR.TAG
-|   |   README.md
-|   |   
-|   \---v
-|       \---cache
-|               stepwise
-|               
-+---.vscode
-|       launch.json
-|       
+|   README.md    
 +---app
 |   |   app.py
 |   |   __init__.py
