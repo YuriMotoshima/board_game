@@ -3,6 +3,7 @@ from typing import Annotated, List
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.security import OAuth2PasswordRequestForm
+from jwt.exceptions import ExpiredSignatureError
 from sqlalchemy import and_, or_
 from sqlalchemy.future import select
 from sqlalchemy.orm import Session, joinedload
@@ -49,7 +50,8 @@ async def create_refresh_token(
     payload: RefreshTokenPayload
 ):
     try:
-        decoded_refresh = decode_refresh_token(refresh_token=payload.refresh_token)
+
+        decode_refresh = decode_refresh_token(refresh_token=payload.refresh_token)
 
         result = await session.execute(
             select(TokenData)
@@ -60,29 +62,32 @@ async def create_refresh_token(
 
         search_token = result.scalar_one_or_none()
         
-        
         if not search_token.cache_data:
             raise HTTPException(status_code=HTTPStatus.FORBIDDEN, detail="Cache não encontrado")
         
         # 1. Validação User-Agent
         if search_token.cache_data.user_agent != request.state.user_agent:
-            raise HTTPException(status_code=401, detail="User-Agent não reconhecido")
+            raise HTTPException(status_code=HTTPStatus.UNAUTHORIZED, detail='Access refused.')
 
         # 2. Validação IP
         if search_token.cache_data.client_host != request.state.client_host:
-            raise HTTPException(status_code=401, detail="IP não reconhecido")
+            raise HTTPException(status_code=HTTPStatus.UNAUTHORIZED, detail='Access refused.')
 
         # 3. Validação de país (opcional)
         if search_token.cache_data.geolocation.get("country") != request.state.geolocation.get("country"):
-            raise HTTPException(status_code=401, detail="Localização suspeita")
+            raise HTTPException(status_code=HTTPStatus.UNAUTHORIZED, detail='Access refused.')
+        
+        # 3. Validação email (opcional)
+        if search_token.user_email != decode_refresh['sub']:
+            raise HTTPException(status_code=HTTPStatus.UNAUTHORIZED, detail='Access refused.')
 
         # Gera novo par de tokens
-        new_tokens = create_access_token(data={"sub": email})
+        new_tokens = create_access_token(data={"sub": decode_refresh['sub']})
 
         # Pega o usuário para registrar no TokenData
-        user = await session.scalar(select(Users).where(Users.email == email))
+        user = await session.scalar(select(Users).where(Users.email == decode_refresh['sub']))
         if not user:
-            raise HTTPException(status_code=HTTPStatus.UNAUTHORIZED, detail="Usuário não encontrado")
+            raise HTTPException(status_code=HTTPStatus.UNAUTHORIZED, detail='Access refused.')
 
         # Salva no banco (TokenData ou outro log de emissão)
         token_data = TokenData(
@@ -96,6 +101,9 @@ async def create_refresh_token(
         await _send_to_data(db_class=token_data, session=session)
 
         return new_tokens
+
+    except ExpiredSignatureError as err:
+        raise HTTPException(status_code=HTTPStatus.UNAUTHORIZED, detail='Signature has expired')
 
     except Exception as err:
         collections_exceptions(err)

@@ -5,6 +5,7 @@ from jwt import decode, encode
 from pwdlib import PasswordHash
 
 from app import _settings as Settings
+from app.config.collections_exceptions import collections_exceptions
 
 pwd_context = PasswordHash.recommended()
 
