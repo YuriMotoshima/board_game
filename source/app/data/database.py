@@ -28,6 +28,6 @@ async def create_tables():
         await conn.run_sync(BaseModel.metadata.create_all)
 
 # Ciclo de vida da aplicação, que vai criar as tabelas na inicialização
-async def lifespan(app):
+async def lifespan(app): # noqa NOSONAR
     await create_tables()
     yield

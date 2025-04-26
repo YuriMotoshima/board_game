@@ -13,7 +13,7 @@ from tests.mocks.factories import UsersFactory
 
 @pytest.fixture()
 def settings():
-    return Settings()
+    return Settings
     
     
 @pytest.fixture()

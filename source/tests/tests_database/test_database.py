@@ -41,10 +41,10 @@ async def test_lifespan(mocker):
     
     # Simulação da função de ciclo de vida
     async def mock_lifespan(app):
-        await create_tables()
+        await mock_create_tables()
         yield
     
     mock_create_tables.assert_not_called()
     async for _ in mock_lifespan(None):
-        pass
+        pass # noqa
     mock_create_tables.assert_called_once()

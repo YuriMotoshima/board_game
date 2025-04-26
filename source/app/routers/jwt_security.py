@@ -31,7 +31,7 @@ async def create_token(request: Request, session: db_session, form_data: OAuth2P
     token_dict = create_access_token(data={"sub": user.email})
 
     token_log = TokenData(
-        id_cache_data=request.state.cache_data.id,
+        id_cache_data=request.state.cache_data['id'],
         user_name=user.nickname,
         user_email=user.email,
         access_token=token_dict["access_token"],
@@ -67,19 +67,19 @@ async def create_refresh_token(
         
         # 1. Validação User-Agent
         if search_token.cache_data.user_agent != request.state.user_agent:
-            raise HTTPException(status_code=HTTPStatus.UNAUTHORIZED, detail='Access refused.')
+            raise HTTPException(status_code=HTTPStatus.UNAUTHORIZED, detail=HTTPStatus.UNAUTHORIZED.value[1])
 
         # 2. Validação IP
         if search_token.cache_data.client_host != request.state.client_host:
-            raise HTTPException(status_code=HTTPStatus.UNAUTHORIZED, detail='Access refused.')
+            raise HTTPException(status_code=HTTPStatus.UNAUTHORIZED, detail=HTTPStatus.UNAUTHORIZED.value[1])
 
         # 3. Validação de país (opcional)
         if search_token.cache_data.geolocation.get("country") != request.state.geolocation.get("country"):
-            raise HTTPException(status_code=HTTPStatus.UNAUTHORIZED, detail='Access refused.')
+            raise HTTPException(status_code=HTTPStatus.UNAUTHORIZED, detail=HTTPStatus.UNAUTHORIZED.value[1])
         
         # 3. Validação email (opcional)
         if search_token.user_email != decode_refresh['sub']:
-            raise HTTPException(status_code=HTTPStatus.UNAUTHORIZED, detail='Access refused.')
+            raise HTTPException(status_code=HTTPStatus.UNAUTHORIZED, detail=HTTPStatus.UNAUTHORIZED.value[1])
 
         # Gera novo par de tokens
         new_tokens = create_access_token(data={"sub": decode_refresh['sub']})
@@ -87,7 +87,7 @@ async def create_refresh_token(
         # Pega o usuário para registrar no TokenData
         user = await session.scalar(select(Users).where(Users.email == decode_refresh['sub']))
         if not user:
-            raise HTTPException(status_code=HTTPStatus.UNAUTHORIZED, detail='Access refused.')
+            raise HTTPException(status_code=HTTPStatus.UNAUTHORIZED, detail=HTTPStatus.UNAUTHORIZED.value[1])
 
         # Salva no banco (TokenData ou outro log de emissão)
         token_data = TokenData(
