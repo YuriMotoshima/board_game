@@ -1,8 +1,6 @@
 import factory
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.CacheData import Users
-from app.security.security import get_password_hash
+from app.models import Users
 
 
 class UsersFactory(factory.Factory):

@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from sqlalchemy import JSON, func
+from sqlalchemy.inspection import inspect
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
@@ -15,3 +16,9 @@ class BaseModel(Base):
     created_at: Mapped[datetime] = mapped_column(unique=False, server_default=func.now())
     updated_by: Mapped[str] = mapped_column(unique=False, nullable=True, server_default="System")
     updated_at: Mapped[datetime] = mapped_column(unique=False, nullable=True, onupdate=func.now())
+    
+    def as_dict(self) -> dict:
+        return {
+            c.key: getattr(self, c.key)
+            for c in inspect(self).mapper.column_attrs
+        }

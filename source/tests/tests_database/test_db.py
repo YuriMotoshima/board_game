@@ -2,7 +2,7 @@
 import pytest
 from sqlalchemy import select
 
-from app.models.CacheData import Users
+from app.models import Users
 
 
 @pytest.mark.asyncio

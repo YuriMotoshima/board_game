@@ -46,7 +46,7 @@ enabled = true
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
-
+asyncio_default_fixture_loop_scope = "function"
 
 [tool.coverage.report]
 show_missing = true
@@ -67,4 +67,4 @@ omit = [
 [tool.taskipy.tasks]
 test = 'pytest -s -x --cov=app -vv'
 post_test = 'coverage html'
-clear = "isort . && powershell -Command \"Get-ChildItem -Path . -Recurse -Directory -Filter '__pycache__' | Remove-Item -Recurse -Force; Get-ChildItem -Path . -Recurse -Directory -Filter 'logs' | Remove-Item -Recurse -Force; Get-ChildItem -Path . -Recurse -Directory -Filter 'htmlcov' | Remove-Item -Recurse -Force\""
+clear = "isort . && powershell -Command \"Get-ChildItem -Path . -Recurse -Directory -Filter '__pycache__' | Remove-Item -Recurse -Force;Get-ChildItem -Path . -Recurse -Directory -Filter '.pytest_cache' | Remove-Item -Recurse -Force; Get-ChildItem -Path . -Recurse -Directory -Filter 'logs' | Remove-Item -Recurse -Force; Get-ChildItem -Path . -Recurse -Directory -Filter 'htmlcov' | Remove-Item -Recurse -Force\""

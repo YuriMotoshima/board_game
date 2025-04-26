@@ -34,7 +34,7 @@ def create_access_token(data:dict):
     return {
         "access_token": access_token,
         "refresh_token": refresh_token,
-        "token_type": "bearer"
+        "token_type": "Bearer"
     }
     
 def decode_refresh_token(refresh_token:str):

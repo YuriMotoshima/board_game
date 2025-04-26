@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 
 from app import _settings as Settings
 from app.data.database import async_session, create_tables, engine, get_session
-from app.models.CacheData import table_registry
+from app.models.base_model import BaseModel
 
 
 # Teste da sessão assíncrona
@@ -21,7 +21,7 @@ def test_engine_is_sqlite_in_test_mode(monkeypatch):
 # Teste para garantir que o engine é configurado com o DATABASE_URL no ambiente normal
 def test_engine_is_production_url(monkeypatch):
     monkeypatch.setattr(Settings, 'TEST', False)
-    monkeypatch.setattr(Settings, 'DATABASE_URL', 'postgresql+asyncpg://user:password@localhost/testdb')
+    monkeypatch.setattr(Settings, 'DATABASE_URL', 'sqlite+aiosqlite:///:memory:')
     engine_prod = create_async_engine(Settings.DATABASE_URL, echo=True)
     assert engine.url.drivername == engine_prod.url.drivername
 
@@ -31,7 +31,7 @@ async def test_create_tables(mocker):
     # Mock para garantir que a criação de tabelas não toca no banco real
     mock_run_sync = mocker.patch('sqlalchemy.ext.asyncio.AsyncConnection.run_sync')
     await create_tables()
-    mock_run_sync.assert_called_once_with(table_registry.metadata.create_all)
+    mock_run_sync.assert_called_once_with(BaseModel.metadata.create_all)
 
 # Teste do ciclo de vida da aplicação
 @pytest.mark.asyncio

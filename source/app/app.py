@@ -20,4 +20,4 @@ app.add_middleware(HeaderValidationMiddleware)
 # Rota simples para teste
 @app.get('/', status_code=HTTPStatus.OK, response_model=SchemaMessage)
 def read_root(request: Request):
-    return {'message': 'Olá mundo', 'headers': request.headers, 'scope': str(request.scope), 'state': request.state._state}
+    return {'message': 'Olá mundo', 'headers': request.headers, 'scope': str(request.scope), 'state': request.state.__dict__}

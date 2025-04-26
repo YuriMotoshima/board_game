@@ -7,7 +7,7 @@ from sqlalchemy.orm import sessionmaker
 from app import _settings as Settings
 from app.app import app
 from app.data.database import get_session
-from app.models.CacheData import table_registry
+from app.models.base_model import BaseModel
 from tests.mocks.factories import UsersFactory
 
 
@@ -64,7 +64,7 @@ async def session():
 
     # Criação das tabelas de forma assíncrona
     async with engine.begin() as conn:
-        await conn.run_sync(table_registry.metadata.create_all)
+        await conn.run_sync(BaseModel.metadata.create_all)
 
     # Criação da sessão assíncrona
     async with async_session() as session:
@@ -72,7 +72,7 @@ async def session():
 
     # Remoção das tabelas de forma assíncrona
     async with engine.begin() as conn:
-        await conn.run_sync(table_registry.metadata.drop_all)
+        await conn.run_sync(BaseModel.metadata.drop_all)
         
         
 @pytest.fixture()

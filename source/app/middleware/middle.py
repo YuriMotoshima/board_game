@@ -109,4 +109,4 @@ class HeaderValidationMiddleware(BaseHTTPMiddleware):
         session.add(cache)
         await session.commit()
         await session.refresh(cache)
-        return cache
+        return cache.as_dict()
